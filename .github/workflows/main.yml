@@ -58,15 +58,9 @@ jobs:
           # and run all Cypress tests
           - name: Create tables in database
             run: npx prisma db push
-          - name: Build 
-            run: npm run build
-          - name: Start server on localhost port 3000
-            run: npm run start
-          - name: run Cypress e2e tests
-            run: npm run test:e2e
-#           - name: Cypress run
-#             uses: cypress-io/github-action@v2
-#             with:
-#               build: npm run build
-#               start: npm start
+          - name: Cypress run
+            uses: cypress-io/github-action@v2
+            with:
+              build: npm run build
+              start: npm start
               
