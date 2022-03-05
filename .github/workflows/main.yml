@@ -34,47 +34,26 @@ jobs:
             - name: Install Dependencies
               if: steps.cache.outputs.cache-hit != 'true'
               run: npm ci
-    install:
+              
+    setup-database:
         runs-on: ubuntu-latest
         needs: [setup-node]
-        container: cypress/browsers:node12.18.3-chrome87-ff82
         steps:
             - name: Checkout
               uses: actions/checkout@v2
-
-            - name: Cypress install
-              uses: cypress-io/github-action@v2
-              with:
-                  # Disable running of tests within install job
-                  runTests: false
-                  build: npm run build
-
-            - name: Save build folder
-              uses: actions/upload-artifact@v2
-              with:
-                  name: build
-                  if-no-files-found: error
-                  path: build
-
+            - name: Reset database
+              run: npm run prisma:reset
+            - name: Migrate database
+              run: npm run prisma:init
+              
     cypress-run:
-        runs-on: ubuntu-latest
-        needs: [install]
-        container: cypress/browsers:node12.18.3-chrome87-ff82
+        runs-on: ubuntu-20.04
+        needs: [setup-database]
+        # Cypress Docker image with Chrome v78
+        # and Firefox v70 pre-installed
+        container: cypress/browsers:node12.13.0-chrome78-ff70
         steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-
-            # Install NPM dependencies, cache them correctly
-            # and run all Cypress tests
-            - name: Cypress run
-              uses: cypress-io/github-action@v2
-              with:
-                  # Specify Browser since container image is compile with Firefox
-                  browser: firefox
-                  build: npm run build
-
-            - name: Download the build folders
-              uses: actions/download-artifact@v2
-              with:
-                  name: build
-                  path: build
+          - uses: actions/checkout@v2
+          - uses: cypress-io/github-action@v2
+            with:
+              browser: chrome
