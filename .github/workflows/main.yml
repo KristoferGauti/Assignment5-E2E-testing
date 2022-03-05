@@ -47,10 +47,7 @@ jobs:
               run: npm run prisma:reset
             - name: Migrate database
               run: npm run prisma:init
-            - name: build server
-              run: npm run build
-            - name: Run server
-              run: npm run start
+            
               
     cypress-run:
         runs-on: ubuntu-20.04
