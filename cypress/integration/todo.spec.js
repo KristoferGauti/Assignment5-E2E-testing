@@ -8,7 +8,7 @@ function clearAllTodos() {
 
 describe("📝 TODO app", () => {
     beforeEach(() => {
-        cy.visit("http://localhost:3000");
+        cy.visit("/");
     });
     it("TODO list is empty", () => {
         getByTestId("todo-item").should("not.exist");
