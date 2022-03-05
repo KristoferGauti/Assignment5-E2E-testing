@@ -14,64 +14,65 @@ on:
     workflow_dispatch:
 
 jobs:
-  setup-node:
-    runs-on: ubuntu-latest
-    steps:
-        - uses: actions/checkout@v2
-        # Setup node
-        - name: Setup nodeJS
-          uses: actions/setup-node@v2.5.1
-          with:
-              node-version: 16
-        - name: Cache Node Modules
-          id: cache-node-modules
-          uses: actions/cache@v2
-          with:
-              path: ~/.npm
-              key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: |
-                  ${{ runner.OS }}-npm-cache-
-        - name: Install Dependencies
-          if: steps.cache.outputs.cache-hit != 'true'
-          run: npm ci
-  install:
-    runs-on: ubuntu-latest
-    container: cypress/browsers:node12.18.3-chrome87-ff82
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    setup-node:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            # Setup node
+            - name: Setup nodeJS
+              uses: actions/setup-node@v2.5.1
+              with:
+                  node-version: 16
+            - name: Cache Node Modules
+              id: cache-node-modules
+              uses: actions/cache@v2
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.OS }}-npm-cache-
+            - name: Install Dependencies
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: npm ci
+    install:
+        runs-on: ubuntu-latest
+        container: cypress/browsers:node12.18.3-chrome87-ff82
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
 
-      - name: Save build folder
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          if-no-files-found: error
-          path: build
+            - name: Cypress install
+              uses: cypress-io/github-action@v2
+              with:
+                  # Disable running of tests within install job
+                  runTests: false
+                  build: npm run build
 
-      - name: Cypress install
-        uses: cypress-io/github-action@v2
-        with:
-          # Disable running of tests within install job
-          runTests: false
-          build: npm run build
-  cypress-run:
-    runs-on: ubuntu-latest
-    container: cypress/browsers:node12.18.3-chrome87-ff82
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+            - name: Save build folder
+              uses: actions/upload-artifact@v2
+              with:
+                  name: build
+                  if-no-files-found: error
+                  path: build
 
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
+    cypress-run:
+        runs-on: ubuntu-latest
+        container: cypress/browsers:node12.18.3-chrome87-ff82
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
 
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          # Specify Browser since container image is compile with Firefox
-          browser: firefox
-          build: npm run build
+            # Install NPM dependencies, cache them correctly
+            # and run all Cypress tests
+            - name: Cypress run
+              uses: cypress-io/github-action@v2
+              with:
+                  # Specify Browser since container image is compile with Firefox
+                  browser: firefox
+                  build: npm run build
+
+            - name: Download the build folders
+              uses: actions/download-artifact@v2
+              with:
+                  name: build
+                  path: build
