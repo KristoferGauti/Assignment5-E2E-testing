@@ -47,6 +47,8 @@ jobs:
               run: npm run prisma:reset
             - name: Migrate database
               run: npm run prisma:init
+            - name: Run server
+              run: npm run start
               
     cypress-run:
         runs-on: ubuntu-20.04
@@ -55,8 +57,6 @@ jobs:
         # and Firefox v70 pre-installed
         container: cypress/browsers:node12.13.0-chrome78-ff70
         steps:
-          - name: Run server
-            run: npm run start
           - uses: actions/checkout@v2
           - uses: cypress-io/github-action@v2
             with:
