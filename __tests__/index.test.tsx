@@ -71,10 +71,8 @@ describe("Component tests", () => {
             return expect(screen.getByTestId("todo-item")).toBeInTheDocument();
         });
         await waitFor(async () => {
-            const todoItems = await screen.findAllByTestId("todo-item"); // findAllByTestId is async function
-            for (const todoItem of todoItems) {
-                fireEvent.click(todoItem);
-            }
+            const todoItem = await screen.findByTestId("todo-item"); // findByTestId is async function
+            fireEvent.click(todoItem);
         });
         await waitFor(() => {
             return expect(screen.queryAllByTestId("todo-item")).toHaveLength(0);
