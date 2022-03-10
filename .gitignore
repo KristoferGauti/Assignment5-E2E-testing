@@ -41,6 +41,9 @@ yarn-error.log*
 dev.db
 dev.db-journal
 
+# production
+/build
+
 #cypress
 cypress/screenshots
 cypress/videos
