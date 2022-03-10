@@ -2,12 +2,9 @@ function getByTestId(testId) {
     return cy.get(`[data-testid="${testId}"]`);
 }
 
-function clearAllTodos() {
-    getByTestId("todo-item").click({ multiple: true });
-}
-
 describe("📝 TODO app", () => {
     beforeEach(() => {
+        cy.exec("npm run prisma:reset");
         cy.visit("/");
     });
     it("TODO list is empty", () => {
@@ -18,13 +15,11 @@ describe("📝 TODO app", () => {
         getByTestId("todo-item").should("exist");
     });
     it("Adds a second item to the list", () => {
-        clearAllTodos();
         getByTestId("todo-input").type("Test TODO 1st item {enter}");
         getByTestId("todo-input").type("Test TODO 2nd item {enter}");
         getByTestId("todo-item").should("have.length", 2);
     });
     it("Removes one item from the list", () => {
-        clearAllTodos();
         getByTestId("todo-input").type("Test TODO 1st item {enter}");
         getByTestId("todo-input").type("Test TODO 2nd item {enter}");
         getByTestId("todo-input").type("Test TODO 3rd item {enter}");
