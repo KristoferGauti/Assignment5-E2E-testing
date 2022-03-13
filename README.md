@@ -1,3 +1,11 @@
+# Assignment 6 Deployment
+
+To run deployment.yml
+
+```bash
+    kubectl apply -f template/deployment.yml
+```
+
 # Assignment 5
 
 #### E2E / UI Testing
@@ -32,21 +40,21 @@ Run the following commands to get started:
 
 `npx cypress open` (to open cypress in interactive GUI)
 
-- Write a Cypress test that validates the TODO list is empty
-- Write a Cypress test that adds a new item to the list
-- Write a Cypress test that adds a second item to the list
-- Write a Cypress test that removes one item from the list
+-   Write a Cypress test that validates the TODO list is empty
+-   Write a Cypress test that adds a new item to the list
+-   Write a Cypress test that adds a second item to the list
+-   Write a Cypress test that removes one item from the list
 
 Create a Github actions workflow that runs these tests on every push.
 Make sure to create a command to clean the database and run the e2e test suit in `package.json` so that the Action can call that command.
 
 Create UI tests using react-testing-library.
 
-- Mock the api using [Mock Service Worker (MSW)](https://github.com/mswjs/msw)
-- Write a test that asserts that loading is displayed when the response is not correct
-- Write a test that asserts that a single item is in the list when the <Home /> component is loaded
-- Write a test that adds a new item to the list
-- Write a test that removes an item from the list
+-   Mock the api using [Mock Service Worker (MSW)](https://github.com/mswjs/msw)
+-   Write a test that asserts that loading is displayed when the response is not correct
+-   Write a test that asserts that a single item is in the list when the <Home /> component is loaded
+-   Write a test that adds a new item to the list
+-   Write a test that removes an item from the list
 
 Make sure to have the test command and test:e2e command separately in `package.json` so that the Github action workflow can run them in parallel (separate job).
 
