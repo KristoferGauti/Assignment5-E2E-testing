@@ -19,6 +19,8 @@ EXPOSE 3000
 # can use `npm run {script}`
 RUN npm run build
 
+RUN npm run prisma:init
+
 # Lastly we need to run the application when the container starts, set the command
 # as npm run start:
 CMD [ "npm", "run", "start" ]

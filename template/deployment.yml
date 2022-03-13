@@ -15,7 +15,7 @@ spec:
                 version: v1
         spec:
             containers:
-                - image: kristofergauti/assignment5-e2e
+                - image: kristofergauti/assignment-5-e2e-testing
                   imagePullPolicy: Always
                   name: todo-app
                   ports:
