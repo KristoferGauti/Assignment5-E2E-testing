@@ -13,8 +13,6 @@ on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 
-env:
-  GIT_TAG: `echo ${GITHUB_SHA} | cut -c1-8`
 
 jobs:
     # setup-node:
@@ -78,6 +76,8 @@ jobs:
         runs-on: ubuntu-latest
         #needs: [Jest-test-run, cypress-run]
         steps:
+            - name: Add GIT_TAG env property with commit short sha
+              run: echo "GIT_TAG=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
             - name: Checkout master
               uses: actions/checkout@main
 
