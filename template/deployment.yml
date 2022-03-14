@@ -17,7 +17,7 @@ spec:
             terminationGracePeriodSeconds: 30
             containers:
                 - name: todo-app
-                  image: kristofergauti/assignment-5-e2e-testing:latest
+                  image: <IMAGE>
                   imagePullPolicy: Always
                   ports:
                       - containerPort: 3000
