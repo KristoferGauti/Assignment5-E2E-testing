@@ -13,6 +13,8 @@ on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 
+env:
+  GIT_TAG: `echo ${GITHUB_SHA} | cut -c1-8`
 
 jobs:
     # setup-node:
@@ -78,9 +80,6 @@ jobs:
         steps:
             - name: Checkout master
               uses: actions/checkout@main
-
-            - name: Setup github env variables
-              run: echo "GIT_TAG=`echo $GITHUB_SHA`" >> $GITHUB_ENV
 
             - name: Install doctl
               uses: digitalocean/action-doctl@v2
