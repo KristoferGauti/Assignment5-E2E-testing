@@ -15,63 +15,63 @@ on:
 
 
 jobs:
-    setup-node:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            # Setup node
-            - name: Setup nodeJS
-              uses: actions/setup-node@v2.5.1
-              with:
-                  node-version: 16
-            - name: Cache Node Modules
-              id: cache-node-modules
-              uses: actions/cache@v2
-              with:
-                  path: ~/.npm
-                  key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
-                  restore-keys: |
-                      ${{ runner.OS }}-npm-cache-
-            - name: Install Dependencies
-              if: steps.cache.outputs.cache-hit != 'true'
-              run: npm ci
+    # setup-node:
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - uses: actions/checkout@v2
+    #         # Setup node
+    #         - name: Setup nodeJS
+    #           uses: actions/setup-node@v2.5.1
+    #           with:
+    #               node-version: 16
+    #         - name: Cache Node Modules
+    #           id: cache-node-modules
+    #           uses: actions/cache@v2
+    #           with:
+    #               path: ~/.npm
+    #               key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+    #               restore-keys: |
+    #                   ${{ runner.OS }}-npm-cache-
+    #         - name: Install Dependencies
+    #           if: steps.cache.outputs.cache-hit != 'true'
+    #           run: npm ci
 
-    setup-database:
-        runs-on: ubuntu-latest
-        needs: [setup-node]
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Npm install
-              run: npm install
-            - name: Reset database
-              run: npm run prisma:reset
-            - name: Migrate database
-              run: npm run prisma:init
+    # setup-database:
+    #     runs-on: ubuntu-latest
+    #     needs: [setup-node]
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v2
+    #         - name: Npm install
+    #           run: npm install
+    #         - name: Reset database
+    #           run: npm run prisma:reset
+    #         - name: Migrate database
+    #           run: npm run prisma:init
 
-    cypress-run:
-        runs-on: ubuntu-latest
-        needs: [setup-database]
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Synchronize database with schema
-              run: npx prisma db push
-            - name: Cypress run
-              uses: cypress-io/github-action@v2
-              with:
-                  build: npm run build
-                  start: npm start
-    Jest-test-run:
-        runs-on: ubuntu-latest
-        needs: [setup-database]
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Install dependencies
-              run: npm install
-            - name: Jest run
-              run: npm run test
+    # cypress-run:
+    #     runs-on: ubuntu-latest
+    #     needs: [setup-database]
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v2
+    #         - name: Synchronize database with schema
+    #           run: npx prisma db push
+    #         - name: Cypress run
+    #           uses: cypress-io/github-action@v2
+    #           with:
+    #               build: npm run build
+    #               start: npm start
+    # Jest-test-run:
+    #     runs-on: ubuntu-latest
+    #     needs: [setup-database]
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v2
+    #         - name: Install dependencies
+    #           run: npm install
+    #         - name: Jest run
+    #           run: npm run test
     Deploy:
         runs-on: ubuntu-latest
         needs: [Jest-test-run, cypress-run]
