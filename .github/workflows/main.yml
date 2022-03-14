@@ -13,6 +13,7 @@ on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 
+
 jobs:
     setup-node:
         runs-on: ubuntu-latest
@@ -78,6 +79,9 @@ jobs:
             - name: Checkout master
               uses: actions/checkout@main
 
+            - name: Setup github env variables
+              run: echo "GIT_TAG=`echo $GITHUB_SHA`" >> $GITHUB_ENV
+
             - name: Install doctl
               uses: digitalocean/action-doctl@v2
               with:
@@ -96,12 +100,12 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:$GITHUB_SHA
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:'${GIT_TAG}'
             - name: Save DigitalOcean kubeconfig with short-lived credentials
               run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 todo-cluster
 
             - name: Update deployment file
-              run: sed -i 's|<IMAGE>|${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:$GITHUB_SHA|' $GITHUB_WORKSPACE/template/deployment.yml
+              run: sed -i 's|<IMAGE>|${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:${GIT_TAG}|' $GITHUB_WORKSPACE/template/deployment.yml
 
             - name: Deploy to DigitalOcean Kubernetes cluster
               run: kubectl apply -f $GITHUB_WORKSPACE/template/deployment.yml
