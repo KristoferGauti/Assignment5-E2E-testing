@@ -103,7 +103,7 @@ jobs:
                 tags: ${{ steps.meta.outputs.tags }}
             
             - name: Update deployment file
-              run: sed -i 's|<IMAGE>|'${{ steps.meta.outputs.tags }}'|' /template/deployment.yaml
+              run: sed -i 's|<IMAGE>|'${{ steps.meta.outputs.tags }}'|'$GITHUB_WORKSPACE/template/deployment.yaml
 
             - name: Save DigitalOcean kubeconfig with short-lived credentials
               run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 todo-cluster
