@@ -105,7 +105,7 @@ jobs:
             - name: Update docker image
               run: kubectl set image deployment/todo-app todo-app=kristofergauti/assignment-5-e2e-testing:latest
             - name: Executing the update docker image command
-              run: kubectl set image deployment/my-deployment todo-app=myimage
+              run: kubectl set image deployment/todo-app todo-app=myimage
             - name: Verify deployment
               run: kubectl rollout status deployment/todo-app
             - name: Verify load balancer service
