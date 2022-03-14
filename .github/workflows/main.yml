@@ -14,7 +14,7 @@ on:
     workflow_dispatch:
 
 env:
-    TAG: $(echo $GITHUB_SHA | head -c7)
+    TAG: $GITHUB_SHA
 
 jobs:
     setup-node:
