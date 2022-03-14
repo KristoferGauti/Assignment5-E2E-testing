@@ -59,7 +59,7 @@ export default function Home() {
             <main className={styles.main}>
                 <div className={styles.grid}>
                     <h1 className={styles.title}>
-                        TODO 🦾😱 App with{" "}
+                        TODO 🦾 App with{" "}
                         <a href="https://blog.upstash.com/nextjs-todo">
                             Next.js!
                         </a>
