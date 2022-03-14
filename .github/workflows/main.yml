@@ -13,73 +13,68 @@ on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 
-env:
-  GIT_TAG: ""
-
 jobs:
-    # setup-node:
-    #     runs-on: ubuntu-latest
-    #     steps:
-    #         - uses: actions/checkout@v2
-    #         # Setup node
-    #         - name: Setup nodeJS
-    #           uses: actions/setup-node@v2.5.1
-    #           with:
-    #               node-version: 16
-    #         - name: Cache Node Modules
-    #           id: cache-node-modules
-    #           uses: actions/cache@v2
-    #           with:
-    #               path: ~/.npm
-    #               key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
-    #               restore-keys: |
-    #                   ${{ runner.OS }}-npm-cache-
-    #         - name: Install Dependencies
-    #           if: steps.cache.outputs.cache-hit != 'true'
-    #           run: npm ci
+    setup-node:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            # Setup node
+            - name: Setup nodeJS
+              uses: actions/setup-node@v2.5.1
+              with:
+                  node-version: 16
+            - name: Cache Node Modules
+              id: cache-node-modules
+              uses: actions/cache@v2
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.OS }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.OS }}-npm-cache-
+            - name: Install Dependencies
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: npm ci
 
-    # setup-database:
-    #     runs-on: ubuntu-latest
-    #     needs: [setup-node]
-    #     steps:
-    #         - name: Checkout
-    #           uses: actions/checkout@v2
-    #         - name: Npm install
-    #           run: npm install
-    #         - name: Reset database
-    #           run: npm run prisma:reset
-    #         - name: Migrate database
-    #           run: npm run prisma:init
+    setup-database:
+        runs-on: ubuntu-latest
+        needs: [setup-node]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Npm install
+              run: npm install
+            - name: Reset database
+              run: npm run prisma:reset
+            - name: Migrate database
+              run: npm run prisma:init
 
-    # cypress-run:
-    #     runs-on: ubuntu-latest
-    #     needs: [setup-database]
-    #     steps:
-    #         - name: Checkout
-    #           uses: actions/checkout@v2
-    #         - name: Synchronize database with schema
-    #           run: npx prisma db push
-    #         - name: Cypress run
-    #           uses: cypress-io/github-action@v2
-    #           with:
-    #               build: npm run build
-    #               start: npm start
-    # Jest-test-run:
-    #     runs-on: ubuntu-latest
-    #     needs: [setup-database]
-    #     steps:
-    #         - name: Checkout
-    #           uses: actions/checkout@v2
-    #         - name: Install dependencies
-    #           run: npm install
-    #         - name: Jest run
-    #           run: npm run test
+    cypress-run:
+        runs-on: ubuntu-latest
+        needs: [setup-database]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Synchronize database with schema
+              run: npx prisma db push
+            - name: Cypress run
+              uses: cypress-io/github-action@v2
+              with:
+                  build: npm run build
+                  start: npm start
+    Jest-test-run:
+        runs-on: ubuntu-latest
+        needs: [setup-database]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Install dependencies
+              run: npm install
+            - name: Jest run
+              run: npm run test
     Deploy:
         runs-on: ubuntu-latest
-        #needs: [Jest-test-run, cypress-run]
+        needs: [Jest-test-run, cypress-run]
         steps:
-            - name: Add GIT_TAG env property with commit short sha
-              run: echo "GIT_TAG=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
             - name: Checkout master
               uses: actions/checkout@main
 
@@ -101,15 +96,16 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:${{ env.GIT_TAG }}
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing
             - name: Save DigitalOcean kubeconfig with short-lived credentials
               run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 todo-cluster
 
-            - name: Update deployment file
-              run: sed -i 's|<IMAGE>|${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:${env.GIT_TAG}|' $GITHUB_WORKSPACE/template/deployment.yml
-
             - name: Deploy to DigitalOcean Kubernetes cluster
               run: kubectl apply -f $GITHUB_WORKSPACE/template/deployment.yml
+            - name: Update docker image
+              run: kubectl set image deployment/todo-app todo-app=kristofergauti/assignment-5-e2e-testing:latest
+            - name: Executing the update docker image command
+              run: kubectl set image deployment/todo-app todo-app=myimage
             - name: Verify deployment
               run: kubectl rollout status deployment/todo-app
             - name: Verify load balancer service
