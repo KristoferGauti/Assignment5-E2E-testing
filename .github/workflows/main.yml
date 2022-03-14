@@ -103,7 +103,7 @@ jobs:
                 tags: ${{ steps.meta.outputs.tags }}
             
             - name: Update deployment file
-              run: TAG=$(echo ${{ steps.meta.outputs.tags }} | head -c7) && sed -i 's|<IMAGE>|kristofergauti/assignment-5-e2e-testing:'${TAG}'|' $GITHUB_WORKSPACE/template/deployment.yml
+              run: sed -i 's|<IMAGE>|'${{ steps.meta.outputs.tags }}'|' $GITHUB_WORKSPACE/template/deployment.yaml
 
             - name: Save DigitalOcean kubeconfig with short-lived credentials
               run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 todo-cluster
@@ -112,6 +112,6 @@ jobs:
               run: kubectl apply -f $GITHUB_WORKSPACE/template/deployment.yml
 
             - name: Verify deployment
-              run: kubectl rollout status deployment todo-app
+              run: kubectl rollout status deployment/todo-app
             - name: Verify load balancer service
               run: kubectl get service
