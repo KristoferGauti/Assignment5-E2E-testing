@@ -13,6 +13,9 @@ on:
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
 
+env:
+    TAG: $(echo $GITHUB_SHA | head -c7)
+
 jobs:
     setup-node:
         runs-on: ubuntu-latest
@@ -93,10 +96,10 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:`$(echo $GITHUB_SHA | head -c7)`
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:${{ env.TAG }}
 
             - name: Update deployment file
-              run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|kristofergauti/assignment-5-e2e-testing:'${TAG}'|' $GITHUB_WORKSPACE/template/deployment.yml
+              run: sed -i 's|<IMAGE>|kristofergauti/assignment-5-e2e-testing:'${env.TAG}'|' $GITHUB_WORKSPACE/template/deployment.yml
 
             - name: Save DigitalOcean kubeconfig with short-lived credentials
               run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 todo-cluster
