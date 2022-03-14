@@ -96,7 +96,7 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:${TAG}
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:${{ TAG }}
 
             - name: Update deployment file
               run: sed -i 's|<IMAGE>|kristofergauti/assignment-5-e2e-testing:'${TAG}'|' $GITHUB_WORKSPACE/template/deployment.yml
