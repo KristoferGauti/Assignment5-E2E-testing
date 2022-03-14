@@ -93,7 +93,7 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:$(echo $GITHUB_SHA | head -c7)
+                  tags: ${{ secrets.DOCKER_HUB_USERNAME }}/assignment-5-e2e-testing:`$(echo $GITHUB_SHA | head -c7)`
 
             - name: Update deployment file
               run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|kristofergauti/assignment-5-e2e-testing:'${TAG}'|' $GITHUB_WORKSPACE/template/deployment.yml
